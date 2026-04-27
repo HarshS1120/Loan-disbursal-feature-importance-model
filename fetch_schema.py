@@ -1,7 +1,7 @@
 import requests
 import json
 
-url = "http://192.168.1.2:4000/cubejs-api/v1/meta"
+url = "UPLOAD YOUR TARGET ADDRESS HERE"
 
 headers = {
     "Authorization": "Bearer supersecretkey"
