@@ -1,85 +1,123 @@
-# 💳 Loan Approval Prediction with Interpretability
+# Loan Disbursal Prediction System (End-to-End ML + API)
 
-This project builds a machine learning pipeline to predict loan approval outcomes and analyze feature importance using interpretable techniques.
+This project builds a complete machine learning pipeline to predict loan disbursal amounts using business features like login count, sanction ratio, and average sanction amount.
 
-It combines ensemble learning (Random Forest), permutation-based feature importance, and decision tree classification for explainability.
+It includes data ingestion, model training, evaluation, and a production-ready Flask API for real-time predictions.
 
 ---
 
-##  Objective
+## Features
 
-- Predict loan approval status
-- Identify key factors influencing decisions
-- Build interpretable models for transparency
+- Automated data ingestion from Cube.js API
+- Time-series aggregation (weekly financial data)
+- Regression-based prediction model (OLS)
+- Model refitting with updated data
+- Real-time prediction API
+- Intelligent warning system for low-quality inputs
+- Persistent model coefficients & dataset storage
+
+---
+
+## System Architecture
+
+Data Source (Cube.js API) → Data Processing → Model Training → Flask API → Predictions
 
 ---
 
 ## Dataset
 
-- Source: Kaggle Loan Approval Classification Dataset
-- Contains applicant demographics, financial attributes, and loan details
+- Source: Internal Cube.js API
+- Aggregation: Weekly
+- Features:
+  - `loginCount`
+  - `sanctionRatio`
+  - `avgSanctionAmount`
+- Target:
+  - `totalDisbursedAmount`
 
-Example features:
-- Person income
-- Loan interest rate
-- Loan intent
-- Home ownership
-- Previous loan defaults
-
----
-
-##  Methodology
-
-### 1. Data Preprocessing
-- Loaded dataset using Pandas
-- Encoded categorical variables using Label Encoding
-- Split data into training and validation sets
+Data is fetched and saved as:
+- `applications_data.json`
+- `applications_data.csv`
 
 ---
 
-### 2. Model 1 – Random Forest Classifier
-- Trained a Random Forest model (100 estimators)
-- Used ensemble learning for better generalization
+## Model
+
+### Regression Model
+- Algorithm: **Ordinary Least Squares (OLS)** using statsmodels
+- Predictors:
+  - Login count
+  - Sanction ratio
+  - Avg sanction amount
+
+### Enhancements
+
+- Floor constraint using 10th percentile (prevents unrealistic predictions)
+- Input validation warnings (detects low-quality inputs)
+- Model metrics:
+  - R² / Adjusted R²
+  - MAE
+  - MAPE
+  - p-values
 
 ---
 
-### 3. Feature Importance (Permutation Importance)
-- Applied permutation importance using ELI5
-- Evaluated feature impact by measuring performance drop when shuffled
+## Model Refit Pipeline
 
- Top features:
-- Previous loan defaults
-- Loan interest rate
-- Loan percent income
-- Home ownership
-- Income
+- Automatically retrains model using latest data
+- Requires minimum data threshold
+- Returns:
+  - Updated coefficients
+  - Performance metrics
+  - Comparison with previous model
 
 ---
 
-### 4. Model 2 – Decision Tree Classifier (Interpretable Model)
-- Trained on top important features
-- Provides clear, human-readable decision rules
+## API Endpoints
+
+### Data Management
+- `GET /api/data` → Fetch dataset
+- `POST /api/data` → Add/update row
+- `DELETE /api/data/<id>` → Delete row
 
 ---
 
-##  Evaluation Metrics
+### Model
+- `POST /api/refit` → Retrain model
+- `POST /api/refit/accept` → Save new model
+- `GET /api/coefs` → Get model coefficients
 
-### Decision Tree Performance
+---
 
-- **Accuracy Score**
-- **Classification Report (Precision, Recall, F1-score)**
-- **Confusion Matrix**
-- **ROC-AUC Score**
+### Prediction
+- `POST /api/predict`
 
-These metrics provide a comprehensive view of model performance and class-wise behavior.
+#### Example Input:
+```json
+{
+  "loginCount": 100,
+  "sanctionRatio": 0.35,
+  "avgSanctionAmount": 1200000
+}
+``` id="pred-in"
 
+#### Example Output:
+```json
+{
+  "prediction": 54000000,
+  "warnings": []
+}
+``` id="pred-out"
+```
 ---
 
 ## Tech Stack
 
 - Python
-- Pandas
-- Scikit-learn
-- ELI5 (Permutation Importance)
+- Flask (API backend)
+- Pandas / NumPy
+- Statsmodels (OLS regression)
+- Cube.js API
+- JSON/CSV storage
 
 ---
