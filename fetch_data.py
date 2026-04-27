@@ -3,7 +3,7 @@ import json
 import pandas as pd
 
 # ====================== CONFIG ======================
-CUBE_URL = "http://192.168.1.4:4000/cubejs-api/v1/load"
+CUBE_URL = "UPLOAD YOUR TARGET ADDRESS HERE"
 HEADERS = {
     "Authorization": "Bearer supersecretkey",
     "Content-Type": "application/json"
